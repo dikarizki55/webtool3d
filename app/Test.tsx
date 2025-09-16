@@ -1,17 +1,26 @@
+"use client";
+
 import React, { useRef, useState, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame, useThree, ThreeEvent } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
 import * as THREE from "three";
 
+// Types
+interface FaceData {
+  name: string;
+  color: string;
+}
+
 // Komponen untuk objek 3D yang dapat dipilih face-nya
 function SelectableBox() {
-  const meshRef = useRef();
-  const [selectedFace, setSelectedFace] = useState(null);
-  const [hoveredFace, setHoveredFace] = useState(null);
+  const meshRef =
+    useRef<THREE.Mesh<THREE.BoxGeometry, THREE.MeshLambertMaterial>>(null);
+  const [selectedFace, setSelectedFace] = useState<number | null>(null);
+  const [hoveredFace, setHoveredFace] = useState<number | null>(null);
   const { raycaster, camera, pointer, scene } = useThree();
 
   // Data untuk setiap face
-  const faceData = [
+  const faceData: FaceData[] = [
     { name: "Front", color: "#ff6b6b" },
     { name: "Back", color: "#4ecdc4" },
     { name: "Right", color: "#45b7d1" },
@@ -21,7 +30,7 @@ function SelectableBox() {
   ];
 
   // Handle click untuk select face
-  const handleClick = (event) => {
+  const handleClick = (event: ThreeEvent<MouseEvent>): void => {
     event.stopPropagation();
 
     if (!meshRef.current) return;
@@ -30,13 +39,13 @@ function SelectableBox() {
     const intersects = raycaster.intersectObject(meshRef.current);
 
     if (intersects.length > 0) {
-      const faceIndex = Math.floor(intersects[0].faceIndex / 2);
+      const faceIndex: number = Math.floor(intersects[0].faceIndex! / 2);
       setSelectedFace(faceIndex);
     }
   };
 
   // Handle hover untuk preview
-  const handlePointerMove = (event) => {
+  const handlePointerMove = (event: ThreeEvent<PointerEvent>): void => {
     event.stopPropagation();
 
     if (!meshRef.current) return;
@@ -45,7 +54,7 @@ function SelectableBox() {
     const intersects = raycaster.intersectObject(meshRef.current);
 
     if (intersects.length > 0) {
-      const faceIndex = Math.floor(intersects[0].faceIndex / 2);
+      const faceIndex: number = Math.floor(intersects[0].faceIndex! / 2);
       setHoveredFace(faceIndex);
     } else {
       setHoveredFace(null);
@@ -53,20 +62,21 @@ function SelectableBox() {
   };
 
   // Update material berdasarkan face yang dipilih/hover
-  useEffect(() => {
+  useEffect((): void => {
     if (!meshRef.current) return;
 
-    const geometry = meshRef.current.geometry;
-    const positionAttribute = geometry.attributes.position;
-    const colorAttribute = new THREE.BufferAttribute(
+    const geometry: THREE.BoxGeometry = meshRef.current.geometry;
+    const positionAttribute: THREE.BufferAttribute = geometry.attributes
+      .position as THREE.BufferAttribute;
+    const colorAttribute: THREE.BufferAttribute = new THREE.BufferAttribute(
       new Float32Array(positionAttribute.count * 3),
       3
     );
 
     // Set warna untuk setiap vertex
     for (let i = 0; i < positionAttribute.count; i++) {
-      const faceIndex = Math.floor(i / 4);
-      let color = new THREE.Color("#ffffff");
+      const faceIndex: number = Math.floor(i / 4);
+      let color: THREE.Color = new THREE.Color("#ffffff");
 
       if (selectedFace === faceIndex) {
         color = new THREE.Color(faceData[faceIndex]?.color || "#ffffff");
@@ -83,7 +93,7 @@ function SelectableBox() {
 
     geometry.setAttribute("color", colorAttribute);
     meshRef.current.material.needsUpdate = true;
-  }, [selectedFace, hoveredFace]);
+  }, [selectedFace, hoveredFace, faceData]);
 
   return (
     <group>
@@ -128,12 +138,13 @@ function SelectableBox() {
 
 // Komponen untuk objek sphere yang juga dapat dipilih
 function SelectableSphere() {
-  const meshRef = useRef();
-  const [selectedFace, setSelectedFace] = useState(null);
-  const [hoveredFace, setHoveredFace] = useState(null);
+  const meshRef =
+    useRef<THREE.Mesh<THREE.SphereGeometry, THREE.MeshLambertMaterial>>(null);
+  const [selectedFace, setSelectedFace] = useState<number | null>(null);
+  const [hoveredFace, setHoveredFace] = useState<number | null>(null);
   const { raycaster, camera, pointer } = useThree();
 
-  const handleClick = (event) => {
+  const handleClick = (event: ThreeEvent<MouseEvent>): void => {
     event.stopPropagation();
 
     if (!meshRef.current) return;
@@ -142,12 +153,12 @@ function SelectableSphere() {
     const intersects = raycaster.intersectObject(meshRef.current);
 
     if (intersects.length > 0) {
-      const faceIndex = intersects[0].faceIndex;
+      const faceIndex: number = intersects[0].faceIndex!;
       setSelectedFace(faceIndex);
     }
   };
 
-  const handlePointerMove = (event) => {
+  const handlePointerMove = (event: ThreeEvent<PointerEvent>): void => {
     event.stopPropagation();
 
     if (!meshRef.current) return;
@@ -156,7 +167,7 @@ function SelectableSphere() {
     const intersects = raycaster.intersectObject(meshRef.current);
 
     if (intersects.length > 0) {
-      const faceIndex = intersects[0].faceIndex;
+      const faceIndex: number = intersects[0].faceIndex!;
       setHoveredFace(faceIndex);
     } else {
       setHoveredFace(null);
