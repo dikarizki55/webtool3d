@@ -30,7 +30,9 @@ export default function HomePage() {
       });
 
       // Use the correct route for the 3D view
-      router.push(`/maptothreed/generate-3d?bounds=${encodeURIComponent(boundsStr)}`);
+      router.push(
+        `/maptothreed/generate-3d?bounds=${encodeURIComponent(boundsStr)}`
+      );
     }
   };
 
@@ -43,19 +45,22 @@ export default function HomePage() {
         onDrawingModeChange={setIsDrawingMode}
       />
 
-      <div className="absolute top-4 right-4 z-[1000]">
+      <div className="absolute top-4 right-4 z-[1000] flex flex-col items-end">
         <button
           onClick={handleGenerate3D}
           disabled={!selectedBounds}
-          className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-400"
+          className="bg-blue-500 text-white px-4 py-2 rounded-full disabled:bg-gray-400 shadow-[4px_4px_15px_0px_rgba(0,0,0,0.11)]"
         >
           Generate 3D View
         </button>
 
         {!selectedBounds && (
-          <p className="text-sm text-gray-600 mt-2">
-            Please select an area using the rectangle tool first
-          </p>
+          <div className="text-sm mt-2 bg-white shadow-[4px_4px_15px_0px_rgba(0,0,0,0.11)] p-4 rounded-2xl flex gap-2 text-red-500">
+            <div className=" rounded-full bg-red-500 w-5 h-5 text-center font-bold text-white">
+              !
+            </div>
+            Please select an area using the Draw Rectangle tool first
+          </div>
         )}
       </div>
     </div>

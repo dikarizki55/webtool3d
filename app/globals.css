@@ -36,30 +36,53 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.leaflet-top.leaflet-left {
+  top: 60;
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+}
+
+.leaflet-control a {
+  background-color: white !important;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.11);
+  border-radius: 100px !important;
+  line-height: 25px !important;
+  text-transform: uppercase;
+}
+
+.geosearch.leaflet-bar.leaflet-control.leaflet-control-geosearch.leaflet-geosearch-bar {
+  display: none !important;
+}
+
 /* Warna background bar */
 .leaflet-control-geosearch form {
   position: fixed !important;
-  top: 0;
+  top: 15;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  background-color: #1e293b !important; /* Tailwind slate-800 */
-  border: 1px solid #334155 !important; /* Tailwind slate-700 */
-  border-radius: 0.5rem !important; /* rounded-lg */
-  color: #f1f5f9 !important; /* slate-100 */
+  background-color: white !important;
+  box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.11);
+  border-radius: 40px !important;
+  color: black !important;
   font-size: 14px;
+  padding: 5px 15px 5px 5px;
 }
 
 /* Input di dalam search bar */
 .leaflet-control-geosearch input {
   background-color: transparent !important;
   border: none !important;
-  color: #f1f5f9 !important;
+  color: black !important;
   padding: 6px 10px;
+  margin-right: 10px;
+  border-radius: 100px;
 }
 
 /* Dropdown suggestion */
-.leaflet-control-geosearch .results {
-  background-color: #0f172a !important; /* slate-900 */
-  color: #f8fafc !important; /* slate-50 */
+.leaflet-control-geosearch.results {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
 }

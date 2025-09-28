@@ -189,7 +189,7 @@ const LeafletMap = ({
       <div className="absolute top-4 left-4 z-[1000] flex gap-2">
         <button
           onClick={() => onDrawingModeChange(!isDrawingMode)}
-          className={`px-4 py-2 rounded ${
+          className={`px-4 py-2 rounded-full shadow-[4px_4px_15px_0px_rgba(0,0,0,0.11)] ${
             isDrawingMode
               ? "bg-red-500 text-white"
               : "bg-blue-500 text-white hover:bg-blue-600"
@@ -200,7 +200,7 @@ const LeafletMap = ({
         {selectedBounds && (
           <button
             onClick={clearSelection}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="bg-gray-500 rounded-full shadow-[4px_4px_15px_0px_rgba(0,0,0,0.11)] text-white px-4 py-2 hover:bg-gray-600"
           >
             Clear Selection
           </button>
