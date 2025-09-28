@@ -20,6 +20,9 @@
 # production
 /build
 
+#cesium
+/public/cesium
+
 # misc
 .DS_Store
 *.pem

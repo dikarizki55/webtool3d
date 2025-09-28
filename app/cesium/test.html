@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cesium Example</title>
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Cesium.js"></script>
+    <link
+      href="https://cesium.com/downloads/cesiumjs/releases/1.120/Build/Cesium/Widgets/widgets.css"
+      rel="stylesheet"
+    />
+    <style>
+      html,
+      body,
+      #cesiumContainer {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #loadingOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(42, 42, 42, 0.8);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1;
+      }
+      #toolbar {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: rgba(42, 42, 42, 0.8);
+        padding: 8px;
+        border-radius: 4px;
+        color: white;
+        z-index: 2;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cesiumContainer"></div>
+    <div id="loadingOverlay">
+      <h1>Loading...</h1>
+    </div>
+    <div id="toolbar">Toolbar</div>
+
+    <script type="module">
+      // Grant CesiumJS access to your ion assets
+      Cesium.Ion.defaultAccessToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyOWM3ZGM3YS0yNmY4LTRjNDAtYmM0ZS0yNDYwZDcxZDM1MTQiLCJpZCI6MzQyMDQxLCJpYXQiOjE3NTgwODcyNjR9.YoS2FgeDyqb5yEjymWXaaqa_SacjEtfSN_IPrDcU32I";
+
+      async function initCesium() {
+        const viewer = new Cesium.Viewer("cesiumContainer", {
+          terrainProvider: await Cesium.CesiumTerrainProvider.fromIonAssetId(
+            96188
+          ),
+        });
+
+        viewer.scene.globe.depthTestAgainstTerrain = true;
+
+        try {
+          const tileset = await Cesium.Cesium3DTileset.fromIonAssetId(96188);
+          viewer.scene.primitives.add(tileset);
+          await viewer.zoomTo(tileset);
+
+          // Apply the default style if it exists
+          const extras = tileset.asset.extras;
+          if (
+            Cesium.defined(extras) &&
+            Cesium.defined(extras.ion) &&
+            Cesium.defined(extras.ion.defaultStyle)
+          ) {
+            tileset.style = new Cesium.Cesium3DTileStyle(
+              extras.ion.defaultStyle
+            );
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          document.getElementById("loadingOverlay").style.display = "none";
+        }
+      }
+
+      initCesium();
+    </script>
+  </body>
+</html>

@@ -1,7 +1,15 @@
-import type { NextConfig } from "next";
+import { webpack } from "next/dist/compiled/webpack/webpack";
 
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  webpack: (config: { plugins: any[] }) => {
+    config.plugins.push(
+      new webpack.DefinePlugin({
+        CESIUM_BASE_URL: JSON.stringify("/cesium"),
+      })
+    );
+    return config;
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

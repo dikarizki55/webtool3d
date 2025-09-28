@@ -1,0 +1,58 @@
+misal hasil fetch array seperti ini
+{
+  "elements": [
+    {
+      "type": "node",
+      "id": 1,
+      "lat": 48.8584,
+      "lon": 2.2945
+    },
+    {
+      "type": "node",
+      "id": 2,
+      "lat": 48.8585,
+      "lon": 2.2947
+    },
+    {
+      "type": "node",
+      "id": 3,
+      "lat": 48.8586,
+      "lon": 2.2946
+    },
+    {
+      "type": "node",
+      "id": 4,
+      "lat": 48.8584,
+      "lon": 2.2945
+    },
+    {
+      "type": "way",
+      "id": 100,
+      "nodes": [1, 2, 3, 4],
+      "tags": {
+        "natural": "water",
+        "water": "pond"
+      }
+    }
+  ]
+}
+
+aku mau console log seperti ini
+{
+  "type": "way",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[
+      [2.2945, 48.8584],
+      [2.2947, 48.8585],
+      [2.2946, 48.8586],
+      [2.2945, 48.8584]
+    ]]
+  },
+  "properties": {
+    "id": 100,
+    "natural": "water",
+    "water": "pond"
+  }
+}
+
