@@ -11,6 +11,7 @@ import {
 import BaseRectangle from "./BaseRectangle";
 import * as turf from "@turf/turf";
 import BuildingCSG from "./Building";
+import LoadingDots from "./LoadingDots";
 
 // Interface for building data
 interface BuildingData {
@@ -166,8 +167,9 @@ function SceneContent() {
 
   if (loading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center">
-        Loading 3D buildings data...
+      <div className=" text-black h-screen w-full flex items-center justify-center">
+        Loading 3D buildings data
+        <LoadingDots />
       </div>
     );
   }
