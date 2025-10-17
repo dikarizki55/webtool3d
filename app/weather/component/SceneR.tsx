@@ -4,7 +4,8 @@ import Model from "./Model";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import { OrbitControls as OrbitType } from "three-stdlib";
-import { useSpring } from "@react-spring/three";
+import * as THREE from "three";
+import { cubicBezier } from "../helper/cubicBezier";
 
 export default function SceneR() {
   return (
@@ -27,16 +28,18 @@ function AutoOrbitCamera() {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const rotationRef = useRef<number>(0);
   const transitionRef = useRef<boolean>(false);
+  const transProgRef = useRef<number>(0);
+  const lastOrbitPosRef = useRef<number[]>([0, 0, 0]);
 
-  const [{ position, lookAt }, api] = useSpring(() => ({
-    position: [0, 0, 0], //just initial
-    lookAt: [0, 0, 0],
-    config: { tension: 100, friction: 30, mass: 1 },
-    onRest: () => {
-      transitionRef.current = false;
-      isInteractingRef.current = false;
-    },
-  }));
+  //   const [{ position, lookAt }, api] = useSpring(() => ({
+  //     position: [0, 0, 0], //just initial
+  //     lookAt: [0, 0, 0],
+  //     config: { tension: 100, friction: 30, mass: 1 },
+  //     onRest: () => {
+  //       transitionRef.current = false;
+  //       isInteractingRef.current = false;
+  //     },
+  //   }));
 
   useEffect(() => {
     if (!orbitRef.current) return;
@@ -50,12 +53,12 @@ function AutoOrbitCamera() {
 
     const handleEnd = () => {
       timeoutRef.current = setTimeout(() => {
-        // isInteractingRef.current = false;
         transitionRef.current = true;
         const camPos = control.object.position;
-        const lastLook = control.target;
         const lastPosX = radius * Math.sin(rotationRef.current);
         const lastPosZ = radius * Math.cos(rotationRef.current);
+
+        lastOrbitPosRef.current = [camPos.x, camPos.y, camPos.z];
 
         const distance =
           Math.abs(camPos.x - lastPosX) +
@@ -67,29 +70,21 @@ function AutoOrbitCamera() {
           isInteractingRef.current = false;
           return;
         }
-
-        api.start({
-          from: {
-            position: [camPos.x, camPos.y, camPos.z],
-            lookAt: [lastLook.x, lastLook.y, lastLook.z],
-          },
-          to: {
-            position: [lastPosX, 0, lastPosZ],
-            lookAt: [0, 0, 0],
-          },
-        });
       }, delay);
     };
 
     control.addEventListener("start", handleStart);
     control.addEventListener("end", handleEnd);
+    control.domElement?.addEventListener("touchmove", handleStart);
+
     return () => {
       control.removeEventListener("start", handleStart);
       control.removeEventListener("end", handleEnd);
+      control.domElement?.removeEventListener("touchmove", handleStart);
     };
   }, []);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!orbitRef.current) return;
     if (!isInteractingRef.current) {
       rotationRef.current += speed;
@@ -101,12 +96,27 @@ function AutoOrbitCamera() {
       orbit.update();
     }
     if (transitionRef.current) {
-      const [x, y, z] = position.get();
       const orbit = orbitRef.current;
-      orbit.object.position.set(x, y, z);
-      const [lookx, looky, lookz] = lookAt.get();
-      orbit.target.set(lookx, looky, lookz);
+
+      const duration = 2.5;
+      transProgRef.current += delta / duration;
+      const t = Math.min(transProgRef.current, 1);
+      const ease = cubicBezier(0.3, 0, -0.1, 1)(t);
+
+      const [startX, startY, startZ] = lastOrbitPosRef.current;
+      const start = new THREE.Vector3(startX, startY, startZ);
+      const endx = radius * Math.sin(rotationRef.current);
+      const endz = radius * Math.cos(rotationRef.current);
+      const end = new THREE.Vector3(endx, 0, endz);
+      orbit.object.position.lerpVectors(start, end, ease);
+
       orbit.update();
+
+      if (t === 1) {
+        transitionRef.current = false;
+        isInteractingRef.current = false;
+        transProgRef.current = 0;
+      }
     }
   });
 
