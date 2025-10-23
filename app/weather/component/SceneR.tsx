@@ -9,11 +9,11 @@ import { cubicBezier } from "../helper/cubicBezier";
 
 export default function SceneR() {
   return (
-    <Canvas camera={{ fov: 39.6 }}>
+    <Canvas camera={{ fov: 50 }}>
       <ambientLight intensity={1} />
       <directionalLight position={[2, 2, 2]} intensity={1} />
       <Model />
-      <Environment preset="sunset" />
+      <Environment preset="forest" />
       <AutoOrbitCamera />
     </Canvas>
   );
@@ -22,7 +22,10 @@ export default function SceneR() {
 function AutoOrbitCamera() {
   const delay = 2000;
   const speed = 0.005;
-  const radius = 11;
+  const radius = 8;
+  const yCamera = -1;
+  const targetCamera = [0, -0.5, 0];
+
   const orbitRef = useRef<OrbitType | null>(null);
   const isInteractingRef = useRef<boolean>(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,16 +33,7 @@ function AutoOrbitCamera() {
   const transitionRef = useRef<boolean>(false);
   const transProgRef = useRef<number>(0);
   const lastOrbitPosRef = useRef<number[]>([0, 0, 0]);
-
-  //   const [{ position, lookAt }, api] = useSpring(() => ({
-  //     position: [0, 0, 0], //just initial
-  //     lookAt: [0, 0, 0],
-  //     config: { tension: 100, friction: 30, mass: 1 },
-  //     onRest: () => {
-  //       transitionRef.current = false;
-  //       isInteractingRef.current = false;
-  //     },
-  //   }));
+  const lastOrbitTargetRef = useRef<number[]>([0, 0, 0]);
 
   useEffect(() => {
     if (!orbitRef.current) return;
@@ -57,8 +51,10 @@ function AutoOrbitCamera() {
         const camPos = control.object.position;
         const lastPosX = radius * Math.sin(rotationRef.current);
         const lastPosZ = radius * Math.cos(rotationRef.current);
+        const targetPos = control.target;
 
         lastOrbitPosRef.current = [camPos.x, camPos.y, camPos.z];
+        lastOrbitTargetRef.current = [targetPos.x, targetPos.y, targetPos.z];
 
         const distance =
           Math.abs(camPos.x - lastPosX) +
@@ -91,8 +87,8 @@ function AutoOrbitCamera() {
       const orbit = orbitRef.current;
       const x = radius * Math.sin(rotationRef.current);
       const z = radius * Math.cos(rotationRef.current);
-      orbit.object.position.set(x, 0, z);
-      orbit.target.set(0, 0, 0);
+      orbit.object.position.set(x, yCamera, z);
+      orbit.target.set(targetCamera[0], targetCamera[1], targetCamera[2]);
       orbit.update();
     }
     if (transitionRef.current) {
@@ -107,8 +103,15 @@ function AutoOrbitCamera() {
       const start = new THREE.Vector3(startX, startY, startZ);
       const endx = radius * Math.sin(rotationRef.current);
       const endz = radius * Math.cos(rotationRef.current);
-      const end = new THREE.Vector3(endx, 0, endz);
+      const end = new THREE.Vector3(endx, yCamera, endz);
       orbit.object.position.lerpVectors(start, end, ease);
+
+      const [lTX, lTY, lTZ] = lastOrbitTargetRef.current;
+      orbit.target.lerpVectors(
+        new THREE.Vector3(lTX, lTY, lTZ),
+        new THREE.Vector3(targetCamera[0], targetCamera[1], targetCamera[2]),
+        ease
+      );
 
       orbit.update();
 
