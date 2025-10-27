@@ -2,20 +2,28 @@
 import React, { useEffect, useRef, useState } from "react";
 import Model from "./Model";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import { OrbitControls as OrbitType } from "three-stdlib";
 import * as THREE from "three";
 import { cubicBezier } from "../helper/cubicBezier";
+import { useScene } from "../context/sceneContext";
+import Light from "./Light";
 
 export default function SceneR() {
+  const { day } = useScene();
+
   return (
-    <Canvas camera={{ fov: 50 }}>
-      <ambientLight intensity={1} />
-      <directionalLight position={[2, 2, 2]} intensity={1} />
-      <Model />
-      <Environment preset="forest" />
-      <AutoOrbitCamera />
-    </Canvas>
+    <div
+      className={`w-full h-full ${
+        day ? "bg-[rgb(156,195,255)]" : "bg-[rgb(5,19,40)]"
+      } transition-all delay-300 duration-1000`}
+    >
+      <Canvas camera={{ fov: 50 }}>
+        <Light />
+        <Model />
+        <AutoOrbitCamera />
+      </Canvas>
+    </div>
   );
 }
 

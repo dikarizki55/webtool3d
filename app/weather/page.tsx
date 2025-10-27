@@ -7,7 +7,7 @@ export default function page() {
   return (
     <SceneProvider>
       <NavBar />
-      <div className=" w-full h-screen bg-[rgb(156,195,255)]">
+      <div className=" w-full h-screen">
         {/* <Scene /> */}
         <SceneR />
       </div>
