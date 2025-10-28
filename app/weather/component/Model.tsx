@@ -1,6 +1,6 @@
 "use client";
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { act, JSX, useEffect, useRef } from "react";
+import { act, JSX, useEffect, useRef, useState } from "react";
 import { Group } from "three";
 import * as THREE from "three";
 import { useScene } from "../context/sceneContext";
@@ -13,6 +13,7 @@ export default function Model(props: ModelProps) {
   const { scene, animations } = useGLTF("/weather/sunb.glb");
   const group = useRef<Group>(null);
   const { actions } = useAnimations(animations, group);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   function stopAction(actName: string[]) {
     if (actName) {
@@ -36,8 +37,13 @@ export default function Model(props: ModelProps) {
     stopAction(["sun up", "moon down", "moon up", "sun down"]);
 
     if (day) {
-      playAnimation("sun up");
-      playAnimation("moon down");
+      if (firstLoad) {
+        playAnimation("sun up");
+        setFirstLoad(false);
+      } else {
+        playAnimation("sun up");
+        playAnimation("moon down");
+      }
     } else {
       playAnimation("sun down");
       playAnimation("moon up");

@@ -12,8 +12,8 @@ export default function NavBar() {
 }
 
 function Switch() {
-  //   const [on, setOn] = useState(false);
   const { day, setDay } = useScene();
+  const [time, setTime] = useState(Date.now());
 
   return (
     <div className=" flex items-center gap-3">
@@ -26,7 +26,12 @@ function Switch() {
         className={` cursor-pointer rounded-full ${
           day ? "bg-white" : "bg-black/50"
         } p-1 w-12 transition-all duration-300`}
-        onClick={() => setDay(!day)}
+        onClick={() => {
+          if (Date.now() - time > 1200) {
+            setDay(!day);
+            setTime(Date.now());
+          }
+        }}
       >
         <div
           className={` ${

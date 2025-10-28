@@ -15,7 +15,7 @@ export default function Light() {
   const dirRef = useRef<THREE.DirectionalLight>(null);
   const prog = useRef(0);
   const intensity = useRef(1);
-  const targetIntensity = day ? 1 : 0.5;
+  const targetIntensity = day ? 1.5 : 0.2;
 
   useEffect(() => {
     setTransition(true);
@@ -36,25 +36,6 @@ export default function Light() {
         dirRef.current.intensity = intensity.current;
       }
 
-      scene.traverse((obj) => {
-        if ((obj as THREE.Mesh).isMesh) {
-          const mesh = obj as THREE.Mesh;
-          if (Array.isArray(mesh.material)) {
-            mesh.material.forEach((mat) => {
-              if ("envMapIntensity" in mat)
-                mat.envMapIntensity = intensity.current;
-            });
-          } else {
-            const mat = mesh.material as THREE.Material & {
-              envMapIntensity?: number;
-            };
-            if (mat.envMapIntensity !== undefined) {
-              mat.envMapIntensity = intensity.current;
-            }
-          }
-        }
-      });
-
       if (t === 1) {
         prog.current = 0;
         setTransition(false);
@@ -66,7 +47,7 @@ export default function Light() {
     <>
       <ambientLight ref={ambientRef} intensity={1} />
       <directionalLight ref={dirRef} position={[2, 2, 2]} intensity={1} />
-      <Environment preset="forest" />
+      {/* <Environment preset="forest" /> */}
     </>
   );
 }
