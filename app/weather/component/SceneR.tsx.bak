@@ -10,23 +10,15 @@ import { useScene } from "../context/sceneContext";
 import Light from "./Light";
 
 export default function SceneR() {
-  const { night } = useScene();
+  const { day } = useScene();
 
   return (
     <div
       className={`w-full h-full ${
-        !night ? "bg-[rgb(156,195,255)]" : "bg-[rgb(5,19,40)]"
+        day ? "bg-[rgb(156,195,255)]" : "bg-[rgb(5,19,40)]"
       } transition-all delay-300 duration-1000`}
     >
-      <Canvas
-        camera={{ fov: 50 }}
-        shadows
-        gl={{ antialias: true }}
-        onCreated={({ gl }) => {
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
-        }}
-      >
+      <Canvas camera={{ fov: 50 }}>
         <Light />
         <Model />
         <AutoOrbitCamera />

@@ -10,17 +10,20 @@ import {
 } from "react";
 
 type SceneType = {
-  day: boolean;
-  setDay: Dispatch<SetStateAction<boolean>>;
+  night: boolean;
+  setNight: Dispatch<SetStateAction<boolean>>;
+  cloudy: boolean;
+  setCloudy: Dispatch<SetStateAction<boolean>>;
 };
 
 const SceneContext = createContext<SceneType | null>(null);
 
 export function SceneProvider({ children }: { children: ReactNode }) {
-  const [day, setDay] = useState(true);
+  const [night, setNight] = useState(false);
+  const [cloudy, setCloudy] = useState(false);
 
   return (
-    <SceneContext.Provider value={{ day, setDay }}>
+    <SceneContext.Provider value={{ night, setNight, cloudy, setCloudy }}>
       {children}
     </SceneContext.Provider>
   );

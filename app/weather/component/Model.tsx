@@ -1,6 +1,6 @@
 "use client";
 import { useAnimations, useGLTF } from "@react-three/drei";
-import { act, JSX, useEffect, useRef, useState } from "react";
+import { JSX, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Group } from "three";
 import * as THREE from "three";
 import { useScene } from "../context/sceneContext";
@@ -8,9 +8,9 @@ import { useScene } from "../context/sceneContext";
 type ModelProps = JSX.IntrinsicElements["group"];
 
 export default function Model(props: ModelProps) {
-  const { day } = useScene();
+  const { night, cloudy } = useScene();
 
-  const { scene, animations } = useGLTF("/weather/sunb.glb");
+  const { scene, animations } = useGLTF("/weather/sun copy 3.glb");
   const group = useRef<Group>(null);
   const { actions } = useAnimations(animations, group);
   const [firstLoad, setFirstLoad] = useState(true);
@@ -18,7 +18,7 @@ export default function Model(props: ModelProps) {
   function stopAction(actName: string[]) {
     if (actName) {
       actName.map((item) => {
-        actions[item]?.getMixer().stopAllAction();
+        actions[item]?.stop();
       });
     }
   }
@@ -36,7 +36,7 @@ export default function Model(props: ModelProps) {
     if (!actions) return;
     stopAction(["sun up", "moon down", "moon up", "sun down"]);
 
-    if (day) {
+    if (!night) {
       if (firstLoad) {
         playAnimation("sun up");
         setFirstLoad(false);
@@ -48,7 +48,34 @@ export default function Model(props: ModelProps) {
       playAnimation("sun down");
       playAnimation("moon up");
     }
-  }, [day, actions]);
+
+    // if (cloudy) {
+    //   playAnimation("cloud up");
+    // } else {
+    //   playAnimation("cloud down");
+    // }
+  }, [night, actions]);
+
+  useEffect(() => {
+    stopAction(["cloud up", "cloud down"]);
+    if (cloudy) {
+      playAnimation("cloud up");
+    } else {
+      if (!firstLoad) playAnimation("cloud down");
+    }
+  }, [cloudy]);
+
+  useLayoutEffect(() => {
+    scene.traverse((child) => {
+      // pastikan ini mesh
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+      }
+    });
+  }, [scene]);
 
   return <primitive ref={group} object={scene} {...props} />;
 }

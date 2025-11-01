@@ -1,4 +1,3 @@
-"use client";
 import React, { useEffect, useRef, useState } from "react";
 import Model from "./Model";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
@@ -9,24 +8,29 @@ import { cubicBezier } from "../helper/cubicBezier";
 import { useScene } from "../context/sceneContext";
 import Light from "./Light";
 
+// Component to enable shadows on the renderer
+function ShadowSetup() {
+  const { gl } = useThree();
+  
+  useEffect(() => {
+    gl.shadowMap.enabled = true;
+    gl.shadowMap.type = THREE.PCFSoftShadowMap; // or THREE.PCFShadowMap for harder shadows
+  }, [gl]);
+
+  return null;
+}
+
 export default function SceneR() {
-  const { night } = useScene();
+  const { day } = useScene();
 
   return (
     <div
       className={`w-full h-full ${
-        !night ? "bg-[rgb(156,195,255)]" : "bg-[rgb(5,19,40)]"
+        day ? "bg-[rgb(156,195,255)]" : "bg-[rgb(5,19,40)]"
       } transition-all delay-300 duration-1000`}
     >
-      <Canvas
-        camera={{ fov: 50 }}
-        shadows
-        gl={{ antialias: true }}
-        onCreated={({ gl }) => {
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
-        }}
-      >
+      <Canvas camera={{ fov: 50 }} shadows>
+        <ShadowSetup />
         <Light />
         <Model />
         <AutoOrbitCamera />
